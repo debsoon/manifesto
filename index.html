@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Maverick Manifesto</title>
+  <!-- p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <!-- Custom fonts will be loaded in p5.js -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: #fff;
+    }
+    #sections {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      overflow: hidden;
+    }
+    .section {
+      height: 100vh;
+      width: 100vw;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform 0.7s cubic-bezier(0.77,0,0.175,1);
+      will-change: transform;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #section-2 {
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.8s cubic-bezier(0.77,0,0.175,1);
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #section-2.fade-bg {
+      opacity: 1;
+    }
+    #section-1 {
+      z-index: 2;
+      background: #fff;
+    }
+    #p5-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+    #overlay-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 10;
+      color: #000;
+      font-size: 9vw;
+      font-family: 'Video Cond Light', 'Video Cond', monospace, sans-serif;
+      pointer-events: none;
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 8px #fff;
+    }
+    #overlay-text .regular {
+      font-family: 'Video Cond Regular', 'Video Cond', monospace, sans-serif;
+    }
+    @media (max-width: 1279px) {
+      #overlay-text {
+        font-size: 16vw;
+      }
+    }
+    #footer-text {
+      position: static;
+      display: block;
+      margin-top: 2vw;
+      left: unset;
+      bottom: unset;
+      transform: none;
+      font-size: 3vw;
+      color: #000;
+      z-index: 10;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .footer-light {
+      font-family: 'Video Cond Light', 'Video Cond', monospace, sans-serif;
+      letter-spacing: 0.02em;
+    }
+    .footer-italic {
+      font-family: 'Argent Pixel CF Italic', 'Argent Pixel CF', serif;
+      font-style: italic;
+      letter-spacing: 0.02em;
+    }
+    @media (max-width: 1279px) {
+      #footer-text {
+        font-size: 5vw;
+        margin-top: 4vw;
+      }
+    }
+    #section-nav {
+      position: fixed;
+      top: 50%;
+      right: 2vw;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 2vw;
+      z-index: 100;
+      user-select: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-item {
+      width: 40px;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      transition: background 0.3s;
+      cursor: pointer;
+      display: block;
+    }
+    .nav-item.active {
+      background: #FFE800;
+    }
+    @media (max-width: 768px) {
+      #section-nav {
+        flex-direction: column;
+        gap: 3vw;
+        right: 4vw;
+        top: 60%;
+        transform: translateY(-50%);
+      }
+      .nav-item {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        display: block;
+      }
+      .nav-item.active {
+        background: #FFE800;
+      }
+    }
+    .section2-content {
+      width: 80vw;
+      max-width: none;
+      text-align: left;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1vw;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 0 auto;
+    }
+    .section2-line {
+      width: 100%;
+      margin: 0 auto;
+      line-height: 1.04;
+      letter-spacing: 0.01em;
+      word-break: break-word;
+    }
+    .section2-line.spacer {
+      height: 1vw;
+      width: 100%;
+      display: block;
+    }
+    .section2-upper {
+      font-family: 'Video Cond Light', 'Video Cond', monospace, sans-serif;
+      font-size: clamp(90px, 8vw, 110px);
+      color: #000;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .section2-lower {
+      font-family: 'Argent Pixel CF Italic', 'Argent Pixel CF', serif;
+      font-size: clamp(110px, 9vw, 130px);
+      color: #000;
+      font-style: italic;
+      display: inline-block;
+    }
+    .section2-desktop { display: flex; }
+    .section2-mobile { display: none; }
+    @media (max-width: 768px) {
+      .section2-desktop { display: none; }
+      .section2-mobile { display: flex; }
+      .section2-content.section2-mobile {
+        width: 84vw;
+        max-width: 90vw;
+        padding: 0 3vw;
+        margin: 0 auto;
+        gap: 2vw;
+        align-items: flex-start;
+        text-align: left;
+        justify-content: center;
+      }
+      .section2-content.section2-mobile .section2-line:first-child {
+        margin-bottom: 0vw;
+      }
+      .section2-content.section2-mobile .section2-extra-space {
+        margin-bottom: 6vw;
+      }
+      .section2-content.section2-mobile .section2-upper {
+        font-size: 15vw;
+      }
+      .section2-content.section2-mobile .section2-lower {
+        font-size: 17vw;
+      }
+      .section2-content.section2-mobile .section2-line.spacer {
+        height: 2vw;
+      }
+    }
+    #section-3 {
+      z-index: 1;
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .section3-content {
+      width: 80vw;
+      max-width: none;
+      text-align: left;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1vw;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 0 auto;
+    }
+    .section3-line {
+      width: 100%;
+      margin: 0 auto;
+      line-height: 1.04;
+      letter-spacing: 0.01em;
+      word-break: break-word;
+    }
+    .section3-line.spacer {
+      height: 1vw;
+      width: 100%;
+      display: block;
+    }
+    .section3-upper {
+      font-family: 'Video Cond Light', 'Video Cond', monospace, sans-serif;
+      font-size: clamp(75px, 8vw, 110px);
+      color: #000;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .section3-lower {
+      font-family: 'Argent Pixel CF Italic', 'Argent Pixel CF', serif;
+      font-size: clamp(90px, 9vw, 130px);
+      color: #000;
+      font-style: italic;
+      display: inline-block;
+    }
+    .section3-desktop { display: flex; }
+    .section3-mobile { display: none; }
+    @media (max-width: 768px) {
+      .section3-desktop { display: none; }
+      .section3-mobile { display: flex; }
+      .section3-content.section3-mobile {
+        width: 84vw;
+        max-width: 90vw;
+        padding: 0 3vw;
+        margin: 0 auto;
+        gap: 2vw;
+        align-items: flex-start;
+        text-align: left;
+        justify-content: center;
+      }
+      .section3-content.section3-mobile .section3-upper {
+        font-size: 15vw;
+      }
+      .section3-content.section3-mobile .section3-oneline {
+        font-size: 14vw;
+      }
+      .section3-content.section3-mobile .section3-lower {
+        font-size: 18vw;
+      }
+      .section3-content.section3-mobile .section3-line.spacer {
+        height: 2vw;
+      }
+    }
+    #section-4 {
+      z-index: 1;
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinning-disc {
+      width: 80vw;
+      max-width: 1200px;
+      min-width: 400px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      animation: spin2d 12s linear infinite;
+    }
+    @keyframes spin2d {
+      100% { transform: rotate(360deg); }
+    }
+    @media (max-width: 768px) {
+      .spinning-disc {
+        width: 120vw;
+        min-width: 720px;
+        max-width: none;
+        animation-duration: 20s;
+      }
+    }
+    .section-bg-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
+    }
+    .section4-content {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 90vw;
+      max-width: 950px;
+      text-align: left;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7vw;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 0 auto;
+    }
+    .section4-line {
+      width: 100%;
+      margin: 0 auto;
+      line-height: 1.13;
+      letter-spacing: 0.01em;
+      word-break: break-word;
+      font-family: 'Video Cond Light', 'Video Cond', monospace, sans-serif;
+      font-size: clamp(40px, 3.5vw, 70px);
+      color: #000;
+      text-transform: none;
+      display: block;
+    }
+    .section4-line.spacer {
+      height: 1vw;
+      width: 100%;
+      display: block;
+    }
+    .section4-regular {
+      font-family: 'Video Cond Regular', 'Video Cond', monospace, sans-serif;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      font-size: inherit;
+    }
+    .section4-desktop { display: flex; }
+    .section4-mobile { display: none; }
+    @media (max-width: 768px) {
+      .section4-desktop { display: none; }
+      .section4-mobile { display: flex; }
+      .section4-content.section4-mobile {
+        width: 92vw;
+        max-width: 98vw;
+        gap: 2vw;
+      }
+      .section4-content.section4-mobile .section4-line {
+        font-size: 8vw;
+      }
+      .section4-content.section4-mobile .section4-line.spacer {
+        height: 2vw;
+      }
+    }
+    .spin-slow {
+      animation: spin2d 18s linear infinite;
+    }
+    .section5-desktop { display: flex !important; }
+    .section5-mobile { display: none !important; }
+    .section5-content {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 90vw;
+      max-width: 950px;
+      text-align: left;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7vw;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 0 auto;
+    }
+    .section5-line {
+      width: 100%;
+      margin: 0 auto;
+      line-height: 1.13;
+      letter-spacing: 0.01em;
+      word-break: break-word;
+      font-family: 'Video Cond Light', 'Video Cond', monospace, sans-serif;
+      font-size: clamp(50px, 4vw, 60px);
+      color: #000;
+      text-transform: none;
+      display: block;
+    }
+    .section5-line.spacer {
+      height: 1vw;
+      width: 100%;
+      display: block;
+    }
+    .section5-lower {
+      font-family: 'Argent Pixel CF Italic', 'Argent Pixel CF', serif;
+      font-size: inherit;
+      color: #000;
+      font-style: italic;
+      display: inline;
+    }
+    .section5-large {
+      font-size: clamp(80px, 6vw, 100px);
+    }
+    @media (max-width: 768px) {
+      .section5-desktop { display: none; }
+      .section5-mobile { display: flex; }
+      .section5-content.section5-desktop { display: none !important; }
+      .section5-content.section5-mobile { display: flex !important; }
+      .section5-content.section5-mobile .section5-line {
+        font-size: 10vw;
+      }
+      .section5-content.section5-mobile .section5-line.spacer {
+        height: 2vw;
+      }
+      .section5-content.section5-mobile .section5-large {
+        font-size: 13vw;
+      }
+      .section5-content.section5-mobile .section5-medium {
+        font-size: 12vw;
+      }
+    }
+    #section-6 {
+      background: #fff;
+      z-index: 1;
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .wipe-img-container {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .wipe-img {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 1;
+      clip-path: inset(0 0 100% 0); /* start fully hidden */
+      transition: opacity 0.8s linear;
+    }
+    .section6-desktop { display: flex !important; }
+    .section6-mobile { display: none !important; }
+    .section6-content {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 90vw;
+      max-width: 950px;
+      text-align: center;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7vw;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto;
+    }
+    .section6-line {
+      width: 100%;
+      margin: 0 auto;
+      line-height: 1.13;
+      letter-spacing: 0.01em;
+      word-break: break-word;
+      font-family: 'Video Cond Light', 'Video Cond', monospace, sans-serif;
+      font-size: 3.2vw;
+      color: #000;
+      text-transform: none;
+      display: block;
+      text-align: center;
+    }
+    .section6-line.spacer {
+      height: 1vw;
+      width: 100%;
+      display: block;
+    }
+    .section6-regular {
+      font-family: 'Argent Pixel CF Italic', 'Argent Pixel CF', serif;
+      font-style: italic;
+    }
+    .section6-large {
+      font-size: clamp(60px, 6vw, 80px);
+    }
+    .section6-tight {
+      margin-bottom: -1.5vw;
+    }
+    .section6-medium {
+      font-size: clamp(36px, 3vw, 60px);
+    }
+    .section6-title {
+      font-size: clamp(48px, 4vw, 72px);
+    }
+    .section6-content.section6-desktop {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      align-items: center;
+      text-align: center;
+    }
+    .section6-line .section6-large {
+      margin-bottom: 2vw;
+    }
+    @media (max-width: 768px) {
+      .section6-desktop { display: none !important; }
+      .section6-mobile { display: flex !important; }
+      .section6-content.section6-mobile {
+        width: 92vw;
+        max-width: 98vw;
+        gap: 2vw;
+        text-align: center;
+        align-items: center;
+      }
+      .section6-content.section6-mobile .section6-line:first-child {
+        margin-bottom: -2vw;
+      }
+      .section6-content.section6-mobile .section6-line {
+        font-size: 8vw;
+      }
+      .section6-content.section6-mobile .section6-large {
+        font-size: 10vw;
+      }
+      .section6-content.section6-mobile .section6-medium {
+        font-size: 9vw;
+      }
+      .section6-content.section6-mobile .section6-tight {
+        margin-bottom: -2.5vw;
+      }
+      .section6-line .section6-large {
+        margin-bottom: 0;
+      }
+    }
+    #section-7 {
+      z-index: 1;
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+      background: #fff;
+    }
+    .section7-bg-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
+      background: #fff;
+    }
+    .section7-content {
+      position: relative;
+      z-index: 2;
+      width: 80vw;
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      pointer-events: none;
+    }
+    .section7-line {
+      font-family: 'Video Cond Light', 'Video Cond', monospace, sans-serif;
+      color: #000;
+      text-align: center;
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+      margin: 0.2em 0;
+      font-weight: 400;
+      font-size: clamp(70px, 4vw, 80px);
+    }
+    .section7-large {
+      font-size: clamp(80px, 7vw, 110px);
+      font-family: 'Video Cond Light', 'Video Cond', monospace, sans-serif;
+      font-weight: 400;
+    }
+    .section7-xlarge {
+      font-size: clamp(90px, 10vw, 140px);
+      font-family: 'Argent Pixel CF Italic', 'Argent Pixel CF', serif;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      margin-bottom: -2.5vw;
+    }
+    .section7-medium {
+      font-size: clamp(70px, 5vw, 80px);
+      margin-bottom: -2.5vw;
+    }
+    .section7-small {
+      font-size: 7vw;
+      letter-spacing: 0.04em;
+    }
+    .section7-italic {
+      font-family: 'Argent Pixel CF Italic', 'Argent Pixel CF', serif;
+      font-style: italic;
+    }
+    .section7-desktop { display: flex !important; }
+    .section7-mobile { display: none !important; }
+    @media (max-width: 768px) {
+      .section7-content {
+        width: 92vw;
+        max-width: 98vw;
+        height: 100vh;
+        padding-top: 8vw;
+      }
+      .section7-line {
+        font-size: 10vw;
+      }
+      .section7-large {
+        font-size: 14vw;
+      }
+      .section7-xlarge {
+        font-size: 20vw;
+      }
+      .section7-medium {
+        font-size: 10vw;
+      }
+      .section7-small {
+        font-size: 7vw;
+      }
+    }
+    .cta-buttons {
+      display: flex;
+      gap: 2vw;
+      justify-content: center;
+      margin-top: 3vw;
+    }
+    .cta-btn,
+    .cta-btn:hover,
+    .cta-btn:focus,
+    .cta-btn:active {
+      text-shadow: none;
+      box-shadow: none;
+    }
+    .cta-btn {
+      font-family: 'Video Cond Regular', 'Video Cond', monospace, sans-serif;
+      font-size: 2.2vw;
+      padding: 0.4em 1.2em;
+      border: 2px solid #000;
+      background: transparent;
+      color: #000;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, color 0.2s;
+      outline: none;
+      width: auto;
+      min-width: 0;
+      text-decoration: none;
+      pointer-events: auto;
+    }
+    .cta-btn:hover, .cta-btn:focus {
+      background: #000;
+      color: #fff;
+    }
+    @media (max-width: 768px) {
+      .cta-buttons {
+        flex-direction: column;
+        gap: 3vw;
+        margin-top: 7vw;
+        align-items: center;
+      }
+      .cta-btn {
+        font-size: 4vw;
+        padding: 0.4em 1.1em;
+        width: auto;
+        min-width: 0;
+        display: inline-block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="sections">
+    <div class="section" id="section-1">
+      <div id="overlay-text">
+        A <span class="regular">DIGITAL</span><br>
+        <span class="regular">MAVERICK</span><br>
+        MANIFESTO
+        <div id="footer-text">
+          <span class="footer-light">written by</span> <span class="footer-italic">Debbie Soon</span>
+        </div>
+        <div class="cta-buttons">
+          <a class="cta-btn" href="https://www.amazon.com/Digital-Mavericks-Debbie-Soon/dp/1394220898" target="_blank" rel="noopener noreferrer">ORDER THE BOOK</a>
+          <button class="cta-btn">SIGN THE MANIFESTO</button>
+        </div>
+      </div>
+      <div id="p5-canvas"></div>
+    </div>
+    <div class="section" id="section-2">
+      <canvas class="section-bg-canvas" id="section2-canvas"></canvas>
+      <div class="section2-content section2-desktop">
+        <div class="section2-line"><span class="section2-upper">THIS IS&nbsp;</span> <span class="section2-lower">your</span></div>
+        <div class="section2-line"><span class="section2-upper">INTERNET.</span></div>
+        <div class="section2-line spacer"></div>
+        <div class="section2-line"><span class="section2-upper">DON'T JUST USE IT.</span></div>
+        <div class="section2-line"><span class="section2-lower">create it.</span></div>
+      </div>
+      <div class="section2-content section2-mobile">
+        <div class="section2-line section2-extra-space"><span class="section2-upper">THIS IS&nbsp;</span><span class="section2-lower">your</span></div>
+        <div class="section2-line"><span class="section2-upper">INTERNET.</span></div>
+        <div class="section2-line spacer"></div>
+        <div class="section2-line"><span class="section2-upper">DON'T JUST</span></div>
+        <div class="section2-line"><span class="section2-upper">USE IT.</span></div>
+        <div class="section2-line"><span class="section2-lower">create it.</span></div>
+      </div>
+    </div>
+    <div class="section" id="section-3">
+      <canvas class="section-bg-canvas" id="section3-canvas"></canvas>
+      <div class="section3-content section3-desktop">
+        <div class="section3-line"><span class="section3-upper">BUILD THINGS.</span></div>
+        <div class="section3-line"><span class="section3-upper">BREAK THINGS.</span></div>
+        <div class="section3-line spacer"></div>
+        <div class="section3-line"><span class="section3-upper">THEN REBUILD THE</span></div>
+        <div class="section3-line"><span class="section3-upper">ONES THAT MAKE YOU</span></div>
+        <div class="section3-line"><span class="section3-lower">feel&nbsp;</span> <span class="section3-upper">THINGS.</span></div>
+      </div>
+      <div class="section3-content section3-mobile">
+        <div class="section3-line"><span class="section3-upper">BUILD THINGS.</span></div>
+        <div class="section3-line"><span class="section3-upper">BREAK THINGS.</span></div>
+        <div class="section3-line spacer"></div>
+        <div class="section3-line"><span class="section3-upper">THEN REBUILD</span></div>
+        <div class="section3-line"><span class="section3-upper section3-oneline">THE ONES THAT</span></div>
+        <div class="section3-line"><span class="section3-upper">MAKE YOU</span></div>
+        <div class="section3-line"><span class="section3-lower">feel&nbsp;</span> <span class="section3-upper">THINGS.</span></div>
+      </div>
+    </div>
+    <div class="section" id="section-4">
+      <img src="images/page3.png" class="spinning-disc" alt="Spinning Disc" />
+      <div class="section4-content section4-desktop">
+        <div class="section4-line">It is better to <span class="section4-regular">love yourself</span> than</div>
+        <div class="section4-line">to be loved by any algorithm.</div>
+        <div class="section4-line spacer"></div>
+        <div class="section4-line">The <span class="section4-regular">intention</span> you set is greater than</div>
+        <div class="section4-line">the fight for anyone's attention.</div>
+        <div class="section4-line spacer"></div>
+        <div class="section4-line">And the only protocol that matters</div>
+        <div class="section4-line">is the one <span class="section4-regular">you choose to live by</span>.</div>
+      </div>
+      <div class="section4-content section4-mobile">
+        <div class="section4-line">It is better to <span class="section4-regular">love </span></div> 
+        <div class="section4-line"><span class="section4-regular">yourself </span>than to be loved</div>
+        <div class="section4-line">by any algorithm.</div>
+        <div class="section4-line spacer"></div>
+        <div class="section4-line">The <span class="section4-regular">intention</span> you set is</div>
+        <div class="section4-line">greater than the fight</div>
+        <div class="section4-line">for anyone's attention.</div>
+        <div class="section4-line spacer"></div>
+        <div class="section4-line">And the only protocol</div>
+        <div class="section4-line">that matters is the one</div>
+        <div class="section4-line"><span class="section4-regular">you choose to live by</span>.</div>
+      </div>
+    </div>
+    <div class="section" id="section-5">
+      <img src="images/page4.png" class="spinning-disc spin-slow" alt="Animated Element" />
+      <div class="section5-content section5-desktop">
+        <div class="section5-line section5-large">MAKE MONEY.</div>
+        <div class="section5-line">but more importantly,</div>
+        <div class="section5-line section5-large">MAKE <span class="section5-lower">friends.</span></div>
+        <div class="section5-line spacer"></div>
+        <div class="section5-line section5-large">OWN CURRENCY.</div>
+        <div class="section5-line">but above all, own</div>
+        <div class="section5-line section5-large"><span class="section5-lower">being yourself.</span></div>
+      </div>
+      <div class="section5-content section5-mobile">
+        <div class="section5-line section5-large">MAKE MONEY.</div>
+        <div class="section5-line">but more importantly,</div>
+        <div class="section5-line section5-large">MAKE <span class="section5-lower">friends.</span></div>
+        <div class="section5-line spacer"></div>
+        <div class="section5-line section5-large">OWN CURRENCY.</div>
+        <div class="section5-line">but above all, own</div>
+        <div class="section5-line"><span class="section5-lower section5-medium">being yourself.</span></div>
+      </div>
+    </div>
+    <div class="section" id="section-6">
+      <div class="wipe-img-container">
+        <img src="images/page5.png" class="wipe-img" alt="Wipe Animated" />
+      </div>
+      <div class="section6-content section6-desktop">
+        <div class="section6-line section6-title">THE BOLDEST CHOICES ARE</div>
+        <div class="section6-line section6-title">RARELY THE EASIEST.</div>
+        <div class="section6-line spacer"></div>
+        <div class="section6-line section6-tight"><span class="section6-regular section6-large">curiosity</span></div>
+        <div class="section6-line"><span class="section6-medium">over consensus.</span></div>
+
+        <div class="section6-line section6-tight"><span class="section6-regular section6-large">optimism</span></div>
+        <div class="section6-line"><span class="section6-medium">over practicality.</span></div>
+
+        <div class="section6-line section6-tight"><span class="section6-regular section6-large">experimentation</span></div>
+        <div class="section6-line"><span class="section6-medium">over stagnation.</span></div>
+        <div class="section6-line spacer"></div>
+        <div class="section6-line section6-tight">or <span class="section6-regular section6-large">change</span>,</div>
+        <div class="section6-line"><span class="section6-medium">over none at all.</span></div>
+      </div>
+      <div class="section6-content section6-mobile">
+        <div class="section6-line">THE BOLDEST CHOICES ARE</div>
+        <div class="section6-line">RARELY THE EASIEST.</div>
+        <div class="section6-line spacer"></div>
+        <div class="section6-line section6-tight"><span class="section6-regular section6-large">curiosity</span></div>
+        <div class="section6-line"><span class="section6-medium">over consensus.</span></div>
+        <div class="section6-line spacer"></div>
+        <div class="section6-line section6-tight"><span class="section6-regular section6-large">optimism</span></div>
+        <div class="section6-line"><span class="section6-medium">over practicality.</span></div>
+        <div class="section6-line spacer"></div>
+        <div class="section6-line section6-tight"><span class="section6-regular section6-large">experimentation</span></div>
+        <div class="section6-line"><span class="section6-medium">over stagnation.</span></div>
+        <div class="section6-line spacer"></div>
+        <div class="section6-line section6-tight">or <span class="section6-regular section6-large">change</span>,</div>
+        <div class="section6-line"><span class="section6-medium">over none at all.</span></div>
+      </div>
+    </div>
+    <div class="section" id="section-7">
+      <canvas class="section7-bg-canvas" id="section7-canvas" width="1920" height="1080"></canvas>
+      <div class="section7-content section7-desktop">
+        <div class="section7-line section7-medium">YOU GET ONE LIFE.</div>
+        <div class="section7-line section7-large">LIVE IT FULLY.</div>
+        <div class="section7-line section7-xlarge section7-italic">onchain</div>
+        <div class="section7-line section7-medium">AND ON</div>
+        <div class="section7-line section7-large">YOUR TERMS.</div>
+      </div>
+      <div class="section7-content section7-mobile">
+        <div class="section7-line section7-medium">YOU GET ONE LIFE.</div>
+        <div class="section7-line section7-large">LIVE IT FULLY.</div>
+        <div class="section7-line section7-xlarge section7-italic">onchain</div>
+        <div class="section7-line section7-medium">AND ON</div>
+        <div class="section7-line section7-large">YOUR TERMS.</div>
+      </div>
+    </div>
+    <!-- Add more sections here as needed -->
+  </div>
+  <nav id="section-nav"></nav>
+  <script src="sketch.js"></script>
+  <script src="swipe.js"></script>
+  <script type="module">
+    import { sdk } from 'https://esm.sh/@farcaster/frame-sdk';
+
+    // Wait until your app is ready (e.g., after p5.js setup/draw, or window.onload)
+    window.addEventListener('load', () => {
+      sdk.actions.ready();
+    });
+  </script>
+</body>
+</html> 
