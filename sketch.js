@@ -1,13 +1,13 @@
 // List of PNG filenames
 const imgFiles = [
-  'prism.png',
-  'starburst.png',
-  'football.png',
-  'atom.png',
-  'globe.png',
-  'lightningbolt.png',
-  'smileyface.png',
-  'hurricane.png'
+  'images/prism.png',
+  'images/starburst.png',
+  'images/football.png',
+  'images/atom.png',
+  'images/globe.png',
+  'images/lightningbolt.png',
+  'images/smileyface.png',
+  'images/hurricane.png'
 ];
 
 const bgImages = [];
@@ -40,7 +40,7 @@ const MAX_ROTATING = 3;
 function preload() {
   // Load all PNGs
   for (let file of imgFiles) {
-    bgImages.push(loadImage('images/' + file));
+    bgImages.push(loadImage(file));
   }
   videoCondRegular = loadFont('fonts/Video Cond Regular.ttf');
   videoCondLight = loadFont('fonts/Video Cond Light.ttf');
