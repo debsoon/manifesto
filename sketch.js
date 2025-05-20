@@ -42,6 +42,9 @@ function preload() {
   for (let file of imgFiles) {
     bgImages.push(loadImage('images/' + file));
   }
+  videoCondRegular = loadFont('fonts/Video Cond Regular.ttf');
+  videoCondLight = loadFont('fonts/Video Cond Light.ttf');
+  argentPixelItalic = loadFont('fonts/Argent Pixel CF Italic.ttf');
 }
 
 function setup() {
