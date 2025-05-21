@@ -10,7 +10,8 @@ const imgFiles = [
   'images/hurricane.png'
 ];
 
-const bgImages = [];
+// Each entry: { img: p5.Image|null, loaded: bool, alpha: 0-255 }
+const bgImages = imgFiles.map(() => ({ img: null, loaded: false, alpha: 0 }));
 
 // Define anchor positions and sizes for each image (as percentages)
 const imgAnchors = [
@@ -37,19 +38,26 @@ let dragOffset = null;
 const TARGET_ELEMENTS = 18; // visually full
 const MAX_ROTATING = 3;
 
-function preload() {
-  // Load all PNGs
-  for (let file of imgFiles) {
-    bgImages.push(loadImage(file));
-  }
-  videoCondRegular = loadFont('fonts/Video Cond Regular.ttf');
-  videoCondLight = loadFont('fonts/Video Cond Light.ttf');
-  argentPixelItalic = loadFont('fonts/Argent Pixel CF Italic.ttf');
-}
+let videoCondRegular, videoCondLight, argentPixelItalic;
 
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
   cnv.parent('p5-canvas'); // Attach canvas to the correct div
+
+  // Load all PNGs asynchronously and fade in as they load
+  imgFiles.forEach((file, i) => {
+    loadImage(file, (img) => {
+      bgImages[i].img = img;
+      bgImages[i].loaded = true;
+      bgImages[i].alpha = 0;
+    });
+  });
+
+  // Load fonts
+  videoCondRegular = loadFont('fonts/Video Cond Regular.ttf');
+  videoCondLight = loadFont('fonts/Video Cond Light.ttf');
+  argentPixelItalic = loadFont('fonts/Argent Pixel CF Italic.ttf');
+
   recalcPositionsAndSizes();
   pickRotatingElements();
 }
@@ -154,7 +162,17 @@ function draw() {
     }
     rotate(imgRotations[i]);
     imageMode(CENTER);
-    image(bgImages[imgIndices[i]], 0, 0, imgSizes[i], imgSizes[i]);
+    // Fade in effect for each image
+    let imgObj = bgImages[imgIndices[i]];
+    if (imgObj.loaded && imgObj.img) {
+      if (imgObj.alpha < 255) {
+        imgObj.alpha += 12; // Fade speed (adjust as needed)
+        if (imgObj.alpha > 255) imgObj.alpha = 255;
+      }
+      tint(255, imgObj.alpha);
+      image(imgObj.img, 0, 0, imgSizes[i], imgSizes[i]);
+      noTint();
+    }
     pop();
   }
 }
