@@ -44,6 +44,11 @@ let videoCondRegular, videoCondLight, argentPixelItalic;
 
 let firstDraw = true;
 
+// Empty preload to satisfy p5.js and prevent fatal errors
+function preload() {
+  // Intentionally left blank
+}
+
 function setup() {
   console.log('setup() starting');
   let cnv = createCanvas(windowWidth, windowHeight);
