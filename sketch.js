@@ -1,3 +1,5 @@
+console.log('sketch.js loaded');
+
 // List of PNG filenames
 const imgFiles = [
   'images/prism.png',
@@ -40,26 +42,44 @@ const MAX_ROTATING = 3;
 
 let videoCondRegular, videoCondLight, argentPixelItalic;
 
+let firstDraw = true;
+
 function setup() {
+  console.log('setup() starting');
   let cnv = createCanvas(windowWidth, windowHeight);
   cnv.parent('p5-canvas'); // Attach canvas to the correct div
 
   // Load all PNGs asynchronously and fade in as they load
   imgFiles.forEach((file, i) => {
+    console.log('Loading image:', file);
     loadImage(file, (img) => {
+      console.log('Image loaded:', file);
       bgImages[i].img = img;
       bgImages[i].loaded = true;
       bgImages[i].alpha = 0;
+    }, (err) => {
+      console.log('Image failed to load:', file, err);
     });
   });
 
   // Load fonts
-  videoCondRegular = loadFont('fonts/Video Cond Regular.ttf');
-  videoCondLight = loadFont('fonts/Video Cond Light.ttf');
-  argentPixelItalic = loadFont('fonts/Argent Pixel CF Italic.ttf');
+  try {
+    console.log('Loading font: Video Cond Regular');
+    videoCondRegular = loadFont('fonts/Video Cond Regular.ttf');
+    console.log('Loaded font: Video Cond Regular');
+    console.log('Loading font: Video Cond Light');
+    videoCondLight = loadFont('fonts/Video Cond Light.ttf');
+    console.log('Loaded font: Video Cond Light');
+    console.log('Loading font: Argent Pixel CF Italic');
+    argentPixelItalic = loadFont('fonts/Argent Pixel CF Italic.ttf');
+    console.log('Loaded font: Argent Pixel CF Italic');
+  } catch (e) {
+    console.log('Font load error:', e);
+  }
 
   recalcPositionsAndSizes();
   pickRotatingElements();
+  console.log('setup() finished');
 }
 
 function recalcPositionsAndSizes() {
@@ -149,6 +169,10 @@ function pickRotatingElements() {
 }
 
 function draw() {
+  if (firstDraw) {
+    console.log('draw() called (first frame)');
+    firstDraw = false;
+  }
   clear();
   background(255);
   let rotationSpeed = 0.012; // per 16ms (typical frame)
