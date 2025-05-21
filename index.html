@@ -746,6 +746,88 @@
         display: inline-block;
       }
     }
+    .scroll-cue {
+      position: absolute;
+      left: 50%;
+      bottom: 32px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 20;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .scroll-cue span {
+      font-family: 'Video Cond Regular', 'Video Cond', monospace, sans-serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.04em;
+      color: #222;
+      opacity: 0.85;
+      margin-bottom: 0px;
+    }
+    .scroll-cue img {
+      width: 32px;
+      height: 32px;
+      opacity: 0.85;
+      animation: bounce-down 2.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    }
+    @keyframes bounce-down {
+      0% {
+        transform: translateY(0);
+      }
+      15% {
+        transform: translateY(8px);
+      }
+      35% {
+        transform: translateY(0);
+      }
+      55% {
+        transform: translateY(6px);
+      }
+      75% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+    .scroll-up {
+      position: absolute;
+      left: 50%;
+      top: 32px;
+      transform: translateX(-50%);
+      z-index: 20;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .scroll-up img {
+      width: 32px;
+      height: 32px;
+      opacity: 0.35;
+      animation: none;
+    }
+    @media (max-width: 768px) {
+      .scroll-cue {
+        bottom: 24px;
+      }
+      .scroll-cue span {
+        font-size: 1.25rem;
+      }
+      .scroll-cue img {
+        width: 24px;
+        height: 24px;
+        animation: bounce-down 2.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+      }
+      .scroll-up {
+        top: 24px;
+      }
+      .scroll-up img {
+        width: 24px;
+        height: 24px;
+        animation: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -764,6 +846,10 @@
         </div>
       </div>
       <div id="p5-canvas"></div>
+      <div class="scroll-cue">
+        <span> READ IT FIRST</span>
+        <img src="images/Expand_down.svg" alt="Scroll down">
+      </div>
     </div>
     <div class="section" id="section-2">
       <canvas class="section-bg-canvas" id="section2-canvas"></canvas>
@@ -781,6 +867,12 @@
         <div class="section2-line"><span class="section2-upper">DON'T JUST</span></div>
         <div class="section2-line"><span class="section2-upper">USE IT.</span></div>
         <div class="section2-line"><span class="section2-lower">create it.</span></div>
+      </div>
+      <div class="scroll-cue">
+        <img src="images/Expand_down.svg" alt="Scroll down">
+      </div>
+      <div class="scroll-up">
+        <img src="images/Expand_up.svg" alt="Scroll up">
       </div>
     </div>
     <div class="section" id="section-3">
@@ -801,6 +893,12 @@
         <div class="section3-line"><span class="section3-upper section3-oneline">THE ONES THAT</span></div>
         <div class="section3-line"><span class="section3-upper">MAKE YOU</span></div>
         <div class="section3-line"><span class="section3-lower">feel&nbsp;</span> <span class="section3-upper">THINGS.</span></div>
+      </div>
+      <div class="scroll-cue">
+        <img src="images/Expand_down.svg" alt="Scroll down">
+      </div>
+      <div class="scroll-up">
+        <img src="images/Expand_up.svg" alt="Scroll up">
       </div>
     </div>
     <div class="section" id="section-4">
@@ -828,6 +926,12 @@
         <div class="section4-line">that matters is the one</div>
         <div class="section4-line"><span class="section4-regular">you choose to live by</span>.</div>
       </div>
+      <div class="scroll-cue">
+        <img src="images/Expand_down.svg" alt="Scroll down">
+      </div>
+      <div class="scroll-up">
+        <img src="images/Expand_up.svg" alt="Scroll up">
+      </div>
     </div>
     <div class="section" id="section-5">
       <img src="images/page4.png" class="spinning-disc spin-slow" alt="Animated Element" />
@@ -848,6 +952,12 @@
         <div class="section5-line section5-large">OWN CURRENCY.</div>
         <div class="section5-line">but above all, own</div>
         <div class="section5-line"><span class="section5-lower section5-medium">being yourself.</span></div>
+      </div>
+      <div class="scroll-cue">
+        <img src="images/Expand_down.svg" alt="Scroll down">
+      </div>
+      <div class="scroll-up">
+        <img src="images/Expand_up.svg" alt="Scroll up">
       </div>
     </div>
     <div class="section" id="section-6">
@@ -886,6 +996,12 @@
         <div class="section6-line section6-tight">or <span class="section6-regular section6-large">change</span>,</div>
         <div class="section6-line"><span class="section6-medium">over none at all.</span></div>
       </div>
+      <div class="scroll-cue">
+        <img src="images/Expand_down.svg" alt="Scroll down">
+      </div>
+      <div class="scroll-up">
+        <img src="images/Expand_up.svg" alt="Scroll up">
+      </div>
     </div>
     <div class="section" id="section-7">
       <canvas class="section7-bg-canvas" id="section7-canvas" width="1920" height="1080"></canvas>
@@ -895,6 +1011,9 @@
         <div class="section7-line section7-xlarge section7-italic">onchain</div>
         <div class="section7-line section7-medium">AND ON</div>
         <div class="section7-line section7-large">YOUR TERMS.</div>
+        <div class="cta-buttons">
+          <button class="cta-btn">SIGN THE MANIFESTO</button>
+        </div>
       </div>
       <div class="section7-content section7-mobile">
         <div class="section7-line section7-medium">YOU GET ONE LIFE.</div>
@@ -902,6 +1021,12 @@
         <div class="section7-line section7-xlarge section7-italic">onchain</div>
         <div class="section7-line section7-medium">AND ON</div>
         <div class="section7-line section7-large">YOUR TERMS.</div>
+        <div class="cta-buttons">
+          <button class="cta-btn">SIGN THE MANIFESTO</button>
+        </div>
+      </div>
+      <div class="scroll-up">
+        <img src="images/Expand_up.svg" alt="Scroll up">
       </div>
     </div>
     <!-- Add more sections here as needed -->
@@ -909,6 +1034,25 @@
   <nav id="section-nav"></nav>
   <script src="sketch.js"></script>
   <script src="swipe.js"></script>
+  <script>
+    // Make scroll cues clickable and navigate to next section
+    document.addEventListener('DOMContentLoaded', function() {
+      const scrollCues = document.querySelectorAll('.scroll-cue');
+      const scrollUps = document.querySelectorAll('.scroll-up');
+      
+      scrollCues.forEach((cue, index) => {
+        cue.addEventListener('click', function() {
+          goToSection(index + 1);
+        });
+      });
+
+      scrollUps.forEach((up, index) => {
+        up.addEventListener('click', function() {
+          goToSection(index);
+        });
+      });
+    });
+  </script>
   <script type="module">
     import { sdk } from 'https://esm.sh/@farcaster/frame-sdk';
 
