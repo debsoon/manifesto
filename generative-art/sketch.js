@@ -22,13 +22,93 @@ let videoCondLight;
 let argentPixelItalic;
 let profesorRegular;
 
+// ==== PNG ICON OVERLAY ==== //
+let iconPngPaths = [
+  'images/smileyface.png',
+  'images/starburst.png',
+  'images/globe.png',
+  'images/lightningbolt.png',
+  'images/prism.png',
+  'images/hurricane.png',
+  'images/atom.png',
+  'images/circle.png',
+  'images/starburstsolid.png',
+  'images/ring.png',
+  'images/squiggle.png',
+  'images/football.png',
+  'images/wave.png',
+  'images/spiral.png',
+  'images/mushroom.png',
+  'images/glitchsmiley.png',
+  'images/pill.png',
+  'images/striped.png',
+  'images/shades.png',
+  'images/disc.png',
+  'images/planet.png',
+  'images/headphones.png',
+  'images/headphones2.png',
+  'images/cd.png',
+  'images/bottle.png',
+  'images/1.png',
+  'images/2.png',
+  'images/3.png',
+  'images/4.png',
+  'images/5.png',
+  'images/6.png',
+  'images/7.png',
+  'images/8.png',
+  'images/9.png',
+  'images/10.png',
+  'images/11.png',
+  'images/12.png',
+  'images/13.png',
+  'images/14.png',
+  'images/15.png',
+  'images/16.png',
+  'images/17.png',
+  'images/18.png',
+  'images/19.png',
+  'images/20.png',
+  'images/21.png',
+  'images/22.png',
+  'images/23.png',
+  'images/24.png',
+  'images/25.png',
+  'images/26.png',
+  'images/27.png',
+  'images/28.png',
+  'images/29.png',
+  'images/30.png',
+  'images/31.png',
+  'images/32.png',
+  'images/33.png',
+  'images/34.png',
+  'images/35.png',
+  'images/36.png',
+  'images/37.png',
+  'images/38.png',
+  'images/39.png',
+  'images/40.png',
+  'images/41.png',
+  'images/42.png',
+  'images/43.png',
+  'images/44.png',
+  'images/45.png',
+  'images/46.png',
+];
+let iconPngImgs = [];
+
+// Store the generated icon set and their animation state globally
+let animatedIcons = null;
+
 function setup() {
   createCanvas(CANVAS_W, CANVAS_H);
   pixelDensity(1);
   noSmooth();
-  noLoop();
+  // noLoop(); // REMOVE noLoop to allow animation
   randomSeed(seed);
   noiseSeed(seed);
+  generateAnimatedIcons();
 }
 
 function draw() {
@@ -201,105 +281,7 @@ function drawDotField({baseColor, noiseSeedOffset, minSize, maxSize, density, co
   blendMode(BLEND);
 }
 
-function generateNew() {
-  seed = floor(random(100000));
-  randomSeed(seed);
-  noiseSeed(seed);
-  redraw();
-}
-
-// ==== OPTIONAL: HOOK UP TO BUTTON IN HTML ==== //
-// document.getElementById('generate-btn').onclick = generateNew;
-
-// ==== PNG ICON OVERLAY ==== //
-let iconPngPaths = [
-  'images/smileyface.png',
-  'images/starburst.png',
-  'images/globe.png',
-  'images/lightningbolt.png',
-  'images/prism.png',
-  'images/hurricane.png',
-  'images/atom.png',
-  'images/circle.png',
-  'images/starburstsolid.png',
-  'images/ring.png',
-  'images/squiggle.png',
-  'images/football.png',
-  'images/wave.png',
-  'images/spiral.png',
-  'images/mushroom.png',
-  'images/glitchsmiley.png',
-  'images/pill.png',
-  'images/striped.png',
-  'images/shades.png',
-  'images/disc.png',
-  'images/planet.png',
-  'images/headphones.png',
-  'images/headphones2.png',
-  'images/cd.png',
-  'images/bottle.png',
-  'images/1.png',
-  'images/2.png',
-  'images/3.png',
-  'images/4.png',
-  'images/5.png',
-  'images/6.png',
-  'images/7.png',
-  'images/8.png',
-  'images/9.png',
-  'images/10.png',
-  'images/11.png',
-  'images/12.png',
-  'images/13.png',
-  'images/14.png',
-  'images/15.png',
-  'images/16.png',
-  'images/17.png',
-  'images/18.png',
-  'images/19.png',
-  'images/20.png',
-  'images/21.png',
-  'images/22.png',
-  'images/23.png',
-  'images/24.png',
-  'images/25.png',
-  'images/26.png',
-  'images/27.png',
-  'images/28.png',
-  'images/29.png',
-  'images/30.png',
-  'images/31.png',
-  'images/32.png',
-  'images/33.png',
-  'images/34.png',
-  'images/35.png',
-  'images/36.png',
-  'images/37.png',
-  'images/38.png',
-  'images/39.png',
-  'images/40.png',
-  'images/41.png',
-  'images/42.png',
-  'images/43.png',
-  'images/44.png',
-  'images/45.png',
-  'images/46.png',
-];
-let iconPngImgs = [];
-
-function preload() {
-  manifestoTextImg = loadImage('images/manifesto-text.png');
-  iconPngImgs = iconPngPaths.map(path => loadImage(path));
-  paperBgImg = loadImage('images/paperbackground.jpg');
-  
-  // Load fonts
-  videoCondRegular = loadFont('fonts/VideoCond-Regular.ttf');
-  videoCondLight = loadFont('fonts/VideoCond-Light.ttf');
-  argentPixelItalic = loadFont('fonts/ArgentPixelCF-Italic.ttf');
-  profesorRegular = loadFont('fonts/Professor-Regular.ttf');
-}
-
-function drawPngIcons() {
+function generateAnimatedIcons() {
   let maxIcons = iconPngImgs.length;
   let numIcons = min(int(random(7, 12)), maxIcons);
   let iconIndices = shuffle([...Array(maxIcons).keys()]).slice(0, numIcons);
@@ -309,7 +291,6 @@ function drawPngIcons() {
   let used = 0;
   while (icons.length < numIcons && tries < 400) {
     let s = random(600, 900);
-    // Allow some overflow, but not so much that icons are fully outside
     let x = random(-s/3, ART_W + s/3);
     let y = random(-s/3, ART_H - 80 + s/3);
     let rot = random(-PI/16, PI/16);
@@ -324,23 +305,57 @@ function drawPngIcons() {
       y + s/2 > 0 && y - s/2 < ART_H
     );
     if (ok && visible) {
-      icons.push({x, y, s, rot, idx: iconIndices[used]});
+      // Assign a unique, slightly faster and less variable rotation speed
+      let baseSpeed = random(0.018, 0.025); // slightly faster, less variance
+      let speed = random([1, -1]) * baseSpeed;
+      // Assign a gentle random drift for floating
+      let dx = random(-3, 3); // pixels per frame, even faster drift
+      let dy = random(-3, 3);
+      icons.push({x, y, s, rot, idx: iconIndices[used], speed, dx, dy});
       used++;
     }
     tries++;
   }
-  for (let p of icons) {
+  animatedIcons = icons;
+}
+
+function drawPngIcons() {
+  if (!animatedIcons) return;
+  for (let p of animatedIcons) {
+    // Animate rotation
+    p.rot += p.speed;
+    // Animate floating
+    p.x += p.dx;
+    p.y += p.dy;
+    // Wrap around art area (allow overflow for bold look, but keep at least part visible)
+    let minX = -p.s/3, maxX = ART_W + p.s/3;
+    let minY = -p.s/3, maxY = ART_H - 80 + p.s/3;
+    if (p.x - p.s/2 > maxX) p.x = minX - p.s/2 + 1;
+    if (p.x + p.s/2 < minX) p.x = maxX + p.s/2 - 1;
+    if (p.y - p.s/2 > maxY) p.y = minY - p.s/2 + 1;
+    if (p.y + p.s/2 < minY) p.y = maxY + p.s/2 - 1;
     push();
     translate(p.x, p.y);
     rotate(p.rot);
     imageMode(CENTER);
     blendMode(MULTIPLY);
-    tint(0, 0, 0, 80); // Reduced from 120 to 80 for more subtle icons
+    tint(0, 0, 0, 80);
     image(iconPngImgs[p.idx], 0, 0, p.s, p.s);
     blendMode(BLEND);
     pop();
   }
 }
+
+function generateNew() {
+  seed = floor(random(100000));
+  randomSeed(seed);
+  noiseSeed(seed);
+  generateAnimatedIcons();
+  redraw();
+}
+
+// ==== OPTIONAL: HOOK UP TO BUTTON IN HTML ==== //
+// document.getElementById('generate-btn').onclick = generateNew;
 
 // ==== ICON DRAWING FUNCTIONS (pixel grid, 32x32, only lines/vertex) ==== //
 let iconDrawFns = [
@@ -438,6 +453,18 @@ let iconDrawFns = [
     endShape();
   }
 ];
+
+function preload() {
+  manifestoTextImg = loadImage('images/manifesto-text.png');
+  iconPngImgs = iconPngPaths.map(path => loadImage(path));
+  paperBgImg = loadImage('images/paperbackground.jpg');
+  
+  // Load fonts
+  videoCondRegular = loadFont('fonts/VideoCond-Regular.ttf');
+  videoCondLight = loadFont('fonts/VideoCond-Light.ttf');
+  argentPixelItalic = loadFont('fonts/ArgentPixelCF-Italic.ttf');
+  profesorRegular = loadFont('fonts/Professor-Regular.ttf');
+}
 
 
 
